@@ -9,10 +9,10 @@
     origin: 'http://localhost:3000'
   }));
   // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-  //const uri = "mongodb+srv://$$$:$$$@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority";
+  const uri = "mongodb+srv://jadhavashu1m:Thuglife@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority";
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
-const uri = "mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority";
+//const uri = "mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority";
 
   const client = new MongoClient(uri);
 

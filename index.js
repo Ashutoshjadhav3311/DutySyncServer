@@ -27,7 +27,7 @@ const uri = `mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/
       //await listDatabases(client);
       // Send a ping to confirm a successful connection
       //await client.db("admin").command({ ping: 1 });
-      console.log(" You successfully connected to MongoDB!");4
+      console.log(" You successfully connected to MongoDB!");
       
     } finally {
       // Ensures that the client will close when you finish/error

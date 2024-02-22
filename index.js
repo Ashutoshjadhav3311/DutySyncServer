@@ -65,4 +65,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
   main().catch(console.dir);
-module.exports = index;
+module.exports = app;

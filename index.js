@@ -49,6 +49,12 @@ async function listDatabases(client) {
 
 
 //APIs
+// Ping endpoint to keep server active on render
+app.get('/ping', (req, res) => {
+  res.status(200).send('Server is alive!');
+});
+
+
 app.post('/createHouse', async (req, res) => {
   try {
     const  houseData  = req.body;
@@ -62,7 +68,6 @@ app.post('/createHouse', async (req, res) => {
     res.status(500).json({ error: 'Internal server error :Coudld not add houseName' });
   }
 });
-
 
 
 const PORT = process.env.PORT || 9000;

@@ -6,7 +6,7 @@
   // Middleware to parse JSON request body
   app.use(express.json());
   app.use(cors({
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000','https://dutysync.netlify.app'
   }));
   // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const username = process.env.MONGODB_USERNAME;

@@ -54,12 +54,14 @@ async function addHouseMember(client, newHouse){
     { Housename: newHouse.Housename }, 
   { $push: { Membername: newHouse.Membername } }, 
   { new: true },)
-  
+  console.log('addhousemember housename is :',newHouse.Housename)
+  console.log('addhousemember membername is :',newHouse.Membername)
   console.log('addhousemember:',result)
 }
 
 async function getHouseMembers(client, houseName){
   const result=await client.db("DutySyncHouse").collection("HouseList").findOne({ Housename: houseName });
+  return result;
 }
 
 //APIs
@@ -67,7 +69,18 @@ async function getHouseMembers(client, houseName){
 app.get('/ping', (req, res) => {
 res.status(200).send('Server is alive!');
 });
-
+app.get('/getHouseMembers/:houseName', async (req, res) => {
+try{
+  const houseName = req.params.houseName;
+  console.log('houseName:',houseName)
+  const result = await getHouseMembers(client, houseName);
+  res.status(200).json(result);
+  console.log('getHouseMembers:',result)
+}
+catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Internal server error :Coudld not get house members' });
+}});
 app.post('/createHouse', async (req, res) => {
 try {
   const  houseData  = req.body;

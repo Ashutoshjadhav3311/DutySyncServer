@@ -20,6 +20,8 @@ const client = new MongoClient(uri);
 
 
 
+
+
 async function main() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -64,11 +66,32 @@ async function getHouseMembers(client, houseName){
   return result;
 }
 
+async function checkMember(client, membername){
+  const result=await client.db("DutySyncHouse").collection("HouseList").findOne({ Membername: membername });
+  return result;
+}
 //APIs
 // Ping endpoint to keep server active on render
 app.get('/ping', (req, res) => {
 res.status(200).send('Server is alive!');
 });
+
+app.get('/checkHouseMember/:membername',async(req,res)=>{
+  try{
+    const membername = req.params.membername;
+    console.log('Membername:',membername)
+    const result = await checkMember(client, membername);
+    if(result==null){
+      res.status(200).json("Member not in any house");
+    }
+    res.status(200).json(result);
+    console.log('getHouseMembers:',result.Housename)
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error :Coudld not get house members' });
+}});
+
 app.get('/getHouseMembers/:houseName', async (req, res) => {
 try{
   const houseName = req.params.houseName;

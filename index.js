@@ -1,23 +1,21 @@
 
-  const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
-  const cors = require('cors');
-  const express = require('express');
-  const app = express();
-  // Middleware to parse JSON request body
-  app.use(express.json());
-  app.use(cors({
-    origin: ['http://localhost:3000', 'https://dutysync.netlify.app']
-  }));
-  // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
+const cors = require('cors');
+const express = require('express');
+const app = express();
+// Middleware to parse JSON request body
+app.use(express.json());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://dutysync.netlify.app']
+}));
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
-const uri = `mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://jadhavashu1m:Thuglife@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
 
 //const uri = "mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri);
-
-
 
 
 
@@ -36,11 +34,8 @@ async function main() {
     //await client.close();
   }
 }
-async function createHouse(client, newHouse){
-  const result = await client.db("DutySyncHouse").collection("HouseList").insertOne( newHouse );
-  console.log("name of the house is",newHouse )
-  console.log(`New listing created with the following id: ${result.insertedId}`);
-}
+
+  
 
 async function listDatabases(client) {
 databasesList = await client.db().admin().listDatabases();
@@ -104,15 +99,24 @@ catch (error) {
   console.error(error);
   res.status(500).json({ error: 'Internal server error :Coudld not get house members' });
 }});
+
 app.post('/createHouse', async (req, res) => {
 try {
   const  houseData  = req.body;
-  console.log  (houseData);
-  // Call createHouse function to insert the new house data
-  await createHouse(client, houseData);
-
-  res.status(201).json({ message: houseData });
-} catch (error) {
+//  console.log  (houseData);
+  const housename= houseData.Housename
+ // console.log(housename)
+  const existing= await client.db("DutySyncHouse").collection("HouseList").findOne( {Housename:housename} );
+  console.log("existing",existing)
+  if (existing){
+    return res.status(400).json({ message: 'Data already exists' });
+}
+const result = await client.db("DutySyncHouse").collection("HouseList").insertOne( houseData );
+//  console.log("name of the house is",houseData )
+//  console.log(`New listing created with the following id: ${result.insertedId}`);
+  res.status(201).json({ message: 'Data saved successfully' });
+  } 
+ catch (error) {
   console.error(error);
   res.status(500).json({ error: 'Internal server error :Coudld not add houseName' });
 }

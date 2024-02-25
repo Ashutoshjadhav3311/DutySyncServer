@@ -15,6 +15,10 @@ const uri = "mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/
 
 const client = new MongoClient(uri);
 
+const client = new MongoClient(uri);
+
+
+
 
 async function main() {
   try {
@@ -24,11 +28,13 @@ async function main() {
     // Send a ping to confirm a successful connection
     //await client.db("admin").command({ ping: 1 });
     console.log(" You successfully connected to MongoDB!");4
-    
-  } finally {
-    // Ensures that the client will close when you finish/error
-    //await client.close();
-  }
+    const PORT = process.env.PORT || 9000;
+app.listen(PORT, () => {
+console.log(`Server is running on port ${PORT}`);
+});
+} catch (error) {
+  console.error("Error connecting to MongoDB:", error);
+}
 }
 
   
@@ -134,9 +140,6 @@ try {
   res.status(500).json({ error: 'Internal server error :Coudld not add housemember' });
 }
 });
-const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => {
-console.log(`Server is running on port ${PORT}`);
-});
+
 main().catch(console.dir);
 module.exports = app;

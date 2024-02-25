@@ -12,14 +12,7 @@ app.use(cors({
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
 const uri = "mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority";
-
 const client = new MongoClient(uri);
-
-const client = new MongoClient(uri);
-
-
-
-
 async function main() {
   try {
     // Connect the client to the server	(optional starting in v4.7)

@@ -16,8 +16,6 @@ const uri = "mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/
 const client = new MongoClient(uri);
 
 
-
-
 async function main() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -75,10 +73,12 @@ app.get('/checkHouseMember/:membername',async(req,res)=>{
     console.log('Membername:',membername)
     const result = await checkMember(client, membername);
     if(result==null){
-      res.status(200).json("Member not in any house");
+      res.status(400).json("Member not in any house");
+      return;
     }
     res.status(200).json(result);
-    console.log('getHouseMembers:',result.Housename)
+      console.log('getHouseMembers:',result.Housename)
+    
   }
   catch (error) {
     console.error(error);

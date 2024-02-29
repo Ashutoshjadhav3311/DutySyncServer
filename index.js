@@ -11,9 +11,9 @@ app.use(cors({
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
-
-
 const uri = `mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
+
+
 
 const client = new MongoClient(uri);
 
@@ -168,19 +168,22 @@ app.delete('/removeHouseMember',async(req,res)=>{
 
     try {
       const housedata = req.body;
+      
       const houseName=housedata.Housename;
+      console.log("houseName:",houseName)
       const memberName=housedata.Membername;
       const result = await client.db("DutySyncHouse").collection("HouseList").findOneAndUpdate(
       { Housename: houseName },
       { $pull: { Membername: memberName } },
       { new: true }
     );
-        console.log(result)
-    if (!result) {
-      return res.status(404).json({ error: `House ${houseName} not found` });
+        console.log("removeHousemember:",result)
+    if (result) {
+      return res.status(200).json({ message: `Member ${memberName} successfully removed from the house ${houseName}` });
+      
     }
-
-    res.status(200).json({ message: `Member ${memberName} successfully removed from the house ${houseName}` });
+    res.status(404).json({ error: `House ${houseName} not found` });
+    
   } catch (error) {
     console.error('Error removing member from the house:', error);
     res.status(500).json({ error: 'Internal server error: Could not remove member from the house' });

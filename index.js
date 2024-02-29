@@ -11,9 +11,9 @@ app.use(cors({
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
+
+
 const uri = `mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
-
-
 
 const client = new MongoClient(uri);
 
@@ -198,12 +198,18 @@ app.post('/assignRolesToHouseMembers', async (req, res) => {
     }
    
 
-    const assignedRoles = {};
     const startDate = new Date();
+const startDatestr = startDate.toISOString().split('T')[0];
+const endate=new Date(startDatestr);
+endate.setDate(endate.getDate() + 10);
+const endDatestr=endate.toISOString().split('T')[0];
+
+const assignedRoles = {};
     houseDetails.Membername.forEach((member, index) => {
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + roles.Frequency);
-      assignedRoles[member] = { role: roles.RolesNames[index] || 'No role assigned', startDate: startDate.toISOString(),endDate:endDate.toISOString() };
+      
+      assignedRoles[member] = { role: roles.RolesNames[index] || 'No role assigned', startDate: startDatestr,endDate:endDatestr };
     });
     const result = await client.db("DutySyncHouse").collection("AssignedRoles").updateOne(
       { Housename: houseName.Housename },

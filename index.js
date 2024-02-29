@@ -43,18 +43,6 @@ console.log("Databases:");
 databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 };
 
-async function addHouseMember(client, newHouse){
-  console.log("name of the house is",newHouse.Housename)
-  console.log("name of the Member is",newHouse.Membername)
-  const result=await client.db("DutySyncHouse").collection("HouseList").findOneAndUpdate(
-    { Housename: newHouse.Housename }, 
-  { $push: { Membername: newHouse.Membername } }, 
-  { new: true },)
-  console.log('addhousemember housename is :',newHouse.Housename)
-  console.log('addhousemember membername is :',newHouse.Membername)
-  console.log('addhousemember:',result)
-}
-
 async function getHouseMembers(client, houseName){
   const result=await client.db("DutySyncHouse").collection("HouseList").findOne({ Housename: houseName });
   return result;
@@ -129,11 +117,15 @@ app.post('/addHouseMember', async (req, res) => {
 try {
   const  houseData  = req.body;
   console.log  (houseData);
-  await addHouseMember(client, houseData);
+  const result=await client.db("DutySyncHouse").collection("HouseList").findOneAndUpdate(
+    { Housename: houseData.Housename }, 
+  { $push: { Membername: houseData.Membername } }, 
+  { new: true },)
+  console.log("addHouseMemeber",result)
   // Call createHouse function to insert the new house data
   
 
-  res.status(201).json({ message: houseData });
+  res.status(201).json({ message: result });
 } catch (error) {
   console.error(error);
   res.status(500).json({ error: 'Internal server error :Coudld not add housemember' });

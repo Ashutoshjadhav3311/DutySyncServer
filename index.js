@@ -124,8 +124,8 @@ try {
   console.log("addHouseMemeber",result)
   // Call createHouse function to insert the new house data
   
-
-  res.status(201).json({ message: result });
+ 
+  res.status(200).json(result );
 } catch (error) {
   console.error(error);
   res.status(500).json({ error: 'Internal server error :Coudld not add housemember' });

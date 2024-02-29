@@ -11,14 +11,11 @@ app.use(cors({
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
+const uri = `mongodb+srv://jadhavashu1m:Thuglife@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
 
-
-const uri = `mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
+//const uri = `mongodb+srv://${username}:${password}@cluster0.hgwnc0j.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri);
-
-
-
 
 async function main() {
   try {
@@ -146,9 +143,13 @@ try {
 app.post('/saveRoles',async(req,res)=>{
   try {
   const  roles  = req.body;
+  console.log("req body",roles)
   const result=await client.db("DutySyncHouse").collection("Role").findOneAndUpdate(
     { Housename: roles.Housename }, 
-  {$set: { RolesNames: roles.RolesNames } },    //$set overwrites the existing data
+    
+  {$set: { RolesNames: roles.RolesNames ,
+  Frequency:roles.Frequency}
+},    //$set overwrites the existing data
   { new: true },) 
   console.log(roles)
   console.log(result)
@@ -163,5 +164,76 @@ app.post('/saveRoles',async(req,res)=>{
    }
 })
 
+app.delete('/removeHouseMember',async(req,res)=>{
+
+    try {
+      const housedata = req.body;
+      const houseName=housedata.Housename;
+      const memberName=housedata.Membername;
+      const result = await client.db("DutySyncHouse").collection("HouseList").findOneAndUpdate(
+      { Housename: houseName },
+      { $pull: { Membername: memberName } },
+      { new: true }
+    );
+        console.log(result)
+    if (!result) {
+      return res.status(404).json({ error: `House ${houseName} not found` });
+    }
+
+    res.status(200).json({ message: `Member ${memberName} successfully removed from the house ${houseName}` });
+  } catch (error) {
+    console.error('Error removing member from the house:', error);
+    res.status(500).json({ error: 'Internal server error: Could not remove member from the house' });
+  }
+})
+
+app.post('/assignRolesToHouseMembers', async (req, res) => {
+  try {
+    const  houseName  = req.body;
+    
+    const houseDetails = await client.db("DutySyncHouse").collection("HouseList").findOne({ Housename: houseName.Housename });
+    if (!houseDetails) {
+      return res.status(404).json({ error: `House ${houseName} not found` });
+    }
+  
+    const roles = await client.db("DutySyncHouse").collection("Role").findOne({ Housename: houseName.Housename });
+    console.log("roles",roles)
+    if (!roles || !roles.RolesNames) {
+      return res.status(404).json({ error: `Roles not found for house ${houseName.Housename}` });
+    }
+   
+
+    const assignedRoles = {};
+    const startDate = new Date();
+    houseDetails.Membername.forEach((member, index) => {
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + roles.Frequency);
+      assignedRoles[member] = { role: roles.RolesNames[index] || 'No role assigned', startDate: startDate.toISOString(),endDate:endDate.toISOString() };
+    });
+    const result = await client.db("DutySyncHouse").collection("AssignedRoles").updateOne(
+      { Housename: houseName.Housename },
+      { $set: assignedRoles },
+      { upsert: true } // Createnew doc if it doesn't exist
+    );
+
+    res.status(200).json({ message: 'Roles assigned to house members successfully' });
+  } catch (error) {
+    console.error('Error assigning roles to house members:', error);
+    res.status(500).json({ error: 'Internal server error: Could not assign roles to house members' });
+  }
+});
+
+app.get('/getroles/:houseName',async(req,res)=>{
+  try{
+    const houseName = req.params.houseName;
+    const result=await client.db("DutySyncHouse").collection("AssignedRoles").findOne({ Housename: houseName });
+    res.status(200).json(result);
+  }
+  catch{
+
+    console.error(error);
+  res.status(500).json({ error: 'Internal server error :Coudld not  house roles' });
+  }
+})
 main().catch(console.dir);
 module.exports = app;

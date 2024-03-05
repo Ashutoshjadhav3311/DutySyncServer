@@ -204,16 +204,19 @@ const endate=new Date(startDatestr);
 endate.setDate(endate.getDate() + 10);
 const endDatestr=endate.toISOString().split('T')[0];
 
-const assignedRoles = {};
-    houseDetails.Membername.forEach((member, index) => {
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + roles.Frequency);
-      
-      assignedRoles[member] = { role: roles.RolesNames[index] || 'No role assigned', startDate: startDatestr,endDate:endDatestr };
-    });
+const members = houseDetails.Membername.map((member, index) => {
+  return {
+    membername: member,
+    role: roles.RolesNames[index] || 'No role assigned',
+    startDate: startDatestr,
+    endDate: endDatestr
+  };
+});
+
+
     const result = await client.db("DutySyncHouse").collection("AssignedRoles").updateOne(
       { Housename: houseName.Housename },
-      { $set: assignedRoles },
+      { members: members },
       { upsert: true } // Createnew doc if it doesn't exist
     );
 

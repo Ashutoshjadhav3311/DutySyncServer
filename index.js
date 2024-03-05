@@ -216,7 +216,7 @@ const members = houseDetails.Membername.map((member, index) => {
 
     const result = await client.db("DutySyncHouse").collection("AssignedRoles").updateOne(
       { Housename: houseName.Housename },
-      { members: members },
+     { $set: { members: members }},
       { upsert: true } // Createnew doc if it doesn't exist
     );
 
